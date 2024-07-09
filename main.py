@@ -32,16 +32,38 @@ Example:
 7
 """
 
-def longest_path(graph: list) -> int:
-    # Your implementation goes here
-    pass
+def topological_sort_util(v, visited, stack, adj):
+    visited[v] = True
+    for i in adj[v]:
+        if not visited[i[0]]:
+            topological_sort_util(i[0], visited, stack, adj)
+    stack.append(v)
 
-# Helper function to perform topological sort
-def topological_sort(graph):
-    # Your implementation goes here
-    pass
+def longest_path(graph: list, source: int) -> int:
+    V = len(graph)
+    adj = [[] for _ in range(V)]
+    
+    for u in range(V):
+        for v, weight in graph[u]:
+            adj[u].append([v, weight])
+    
+    stack = []
+    visited = [False] * V
+    dist = [-10**9] * V
 
-# Function to calculate longest path using topological sort
-def calculate_longest_path(graph, topo_order):
-    # Your implementation goes here
-    pass
+    for i in range(V):
+        if not visited[i]:
+            topological_sort_util(i, visited, stack, adj)
+    
+    dist[source] = 0
+
+    while stack:
+        u = stack.pop()
+        if dist[u] != -10**9:
+            for i in adj[u]:
+                if dist[i[0]] < dist[u] + i[1]:
+                    dist[i[0]] = dist[u] + i[1]
+
+    max_dist = max(dist)
+    return max_dist
+
